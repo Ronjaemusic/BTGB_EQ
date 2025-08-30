@@ -7,22 +7,64 @@
     body {
       font-family: 'Segoe UI', sans-serif;
       background: #f4f6f8;
-      padding: 20px;
       margin: 0;
+      padding: 20px;
     }
     #container {
-      max-width: 780px;
+      max-width: 800px;
       margin: auto;
       background: white;
       padding: 25px;
       border-left: 6px solid #2e7d32;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
+    .hidden {
+      display: none;
+    }
     h1, h2, h3 {
       color: #2e7d32;
     }
-    .hidden {
+    .question-block {
       display: none;
+    }
+    .question-block.active {
+      display: block;
+    }
+    .radio-group {
+      margin: 15px 0;
+    }
+    .radio-options {
+      display: flex;
+      justify-content: space-between;
+      max-width: 600px;
+      margin: auto;
+    }
+    .radio-labels {
+      display: flex;
+      justify-content: space-between;
+      max-width: 600px;
+      margin: 6px auto 0;
+      font-size: 0.85em;
+      color: #555;
+    }
+    .navigation {
+      margin-top: 20px;
+      display: flex;
+      justify-content: space-between;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #2e7d32;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    input[type="text"] {
+      padding: 8px;
+      font-size: 1em;
+      width: 45%;
+      margin: 10px 10px 20px 0;
     }
     .progress-bar {
       height: 20px;
@@ -46,46 +88,9 @@
       font-size: 0.9em;
       color: #1b5e20;
     }
-    .question-block {
-      display: none;
-    }
-    .question-block.active {
-      display: block;
-    }
-    .radio-group {
-      margin: 15px 0;
-    }
-    .radio-labels {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.85em;
-      color: #555;
-      margin-top: -10px;
-    }
-    .navigation {
-      margin-top: 20px;
-    }
-    .navigation button {
-      padding: 10px 20px;
-      background-color: #2e7d32;
-      color: white;
-      border: none;
-      cursor: pointer;
-      margin-right: 10px;
-    }
-    input[type="text"] {
-      padding: 6px;
-      font-size: 1em;
-      width: 45%;
-      margin-bottom: 10px;
-    }
-    #results {
-      display: none;
-      margin-top: 30px;
-    }
     .results-table {
-      border-collapse: collapse;
       width: 100%;
+      border-collapse: collapse;
       margin-top: 20px;
     }
     .results-table th, .results-table td {
@@ -115,27 +120,23 @@
 </head>
 <body>
   <div id="container">
+    <!-- Intro Screen -->
     <div id="introScreen">
       <h1>BTGB Emotional Intelligence Scorecard</h1>
-      <p>Please enter your name to begin.</p>
-      <label>First Name: <input type="text" id="firstName" /></label><br />
-      <label>Last Name: <input type="text" id="lastName" /></label><br /><br />
+      <p>Please enter your name to begin:</p>
+      <input type="text" id="firstName" placeholder="First Name" />
+      <input type="text" id="lastName" placeholder="Last Name" />
+      <br />
       <button onclick="startAssessment()">Start Assessment</button>
     </div>
 
+    <!-- Assessment Screen -->
     <div id="assessmentScreen" class="hidden">
       <div class="progress-bar">
         <div class="progress-bar-fill" id="progressFill"></div>
         <div class="progress-label" id="progressText">0%</div>
       </div>
       <div id="questionsContainer"></div>
-      <div class="radio-labels">
-        <span>1 - Not at all</span>
-        <span>2</span>
-        <span>3</span>
-        <span>4</span>
-        <span>5 - Always true</span>
-      </div>
       <div class="navigation">
         <button onclick="prevQuestion()">Previous</button>
         <button onclick="nextQuestion()">Next</button>
@@ -143,14 +144,14 @@
       </div>
     </div>
 
-    <div id="results">
+    <!-- Results Screen -->
+    <div id="results" class="hidden">
       <h2 id="namedHeader"></h2>
       <div class="legend">
         <div><span class="dot red"></span> Needs Support (0–19)</div>
         <div><span class="dot yellow"></span> Growth Zone (20–25)</div>
         <div><span class="dot green"></span> Strength Zone (26–30)</div>
       </div>
-
       <table class="results-table">
         <thead>
           <tr>
@@ -163,22 +164,22 @@
           <tr>
             <td>Self-Awareness</td>
             <td><span id="saScore"></span>/30</td>
-            <td id="saColor"></td>
+            <td id="saZone"></td>
           </tr>
           <tr>
             <td>Self-Management</td>
             <td><span id="smScore"></span>/30</td>
-            <td id="smColor"></td>
+            <td id="smZone"></td>
           </tr>
           <tr>
             <td>Social Awareness</td>
             <td><span id="soScore"></span>/30</td>
-            <td id="soColor"></td>
+            <td id="soZone"></td>
           </tr>
           <tr>
             <td>Relationship Management</td>
             <td><span id="rmScore"></span>/30</td>
-            <td id="rmColor"></td>
+            <td id="rmZone"></td>
           </tr>
           <tr>
             <th>Total Score</th>
@@ -219,32 +220,49 @@
       "I celebrate people publicly and correct privately.",
       "I repair relationships after misunderstandings."
     ];
-
     const sectionTitles = ["Self-Awareness", "Self-Management", "Social Awareness", "Relationship Management"];
     let currentIndex = 0;
 
     function startAssessment() {
-      document.getElementById("introScreen").classList.add("hidden");
-      document.getElementById("assessmentScreen").classList.remove("hidden");
+      const first = document.getElementById('firstName').value.trim();
+      const last = document.getElementById('lastName').value.trim();
+      if (!first || !last) {
+        alert("Please enter your full name before starting.");
+        return;
+      }
+      document.getElementById('introScreen').classList.add('hidden');
+      document.getElementById('assessmentScreen').classList.remove('hidden');
       buildQuestions();
       showQuestion(currentIndex);
     }
 
     function buildQuestions() {
       const container = document.getElementById('questionsContainer');
+      container.innerHTML = "";
       questions.forEach((q, i) => {
         const block = document.createElement('div');
         block.className = 'question-block';
         if (i === 0) block.classList.add('active');
         const section = Math.floor(i / 6);
-        const sectionHeader = `<h3 class='section-header'>${sectionTitles[section]}</h3>`;
-        block.innerHTML = sectionHeader + `
+        block.innerHTML = `
+          <h3>${sectionTitles[section]}</h3>
           <h2>Question ${i + 1} of ${questions.length}</h2>
           <p>${q}</p>
           <div class="radio-group">
-            ${[1,2,3,4,5].map(n => `
-              <label><input type="radio" name="q${i}" value="${n}"> ${n}</label>
-            `).join('')}
+            <div class="radio-options">
+              <label><input type="radio" name="q${i}" value="1"></label>
+              <label><input type="radio" name="q${i}" value="2"></label>
+              <label><input type="radio" name="q${i}" value="3"></label>
+              <label><input type="radio" name="q${i}" value="4"></label>
+              <label><input type="radio" name="q${i}" value="5"></label>
+            </div>
+            <div class="radio-labels">
+              <span>1 - Never</span>
+              <span>2 - Rarely</span>
+              <span>3 - Sometimes</span>
+              <span>4 - Often</span>
+              <span>5 - Always</span>
+            </div>
           </div>
         `;
         container.appendChild(block);
@@ -253,9 +271,7 @@
 
     function showQuestion(index) {
       const blocks = document.querySelectorAll('.question-block');
-      blocks.forEach((b, i) => {
-        b.classList.toggle('active', i === index);
-      });
+      blocks.forEach((b, i) => b.classList.toggle('active', i === index));
       document.getElementById('submitResults').style.display = (index === questions.length - 1) ? 'inline-block' : 'none';
       const percent = Math.round(((index + 1) / questions.length) * 100);
       document.getElementById("progressFill").style.width = percent + "%";
@@ -281,7 +297,7 @@
       }
     }
 
-    function getColorDot(score) {
+    function getZone(score) {
       if (score >= 26) return '<span class="dot green"></span> Strength Zone';
       if (score >= 20) return '<span class="dot yellow"></span> Growth Zone';
       return '<span class="dot red"></span> Needs Support';
@@ -291,33 +307,34 @@
       let sa = 0, sm = 0, so = 0, rm = 0;
       for (let i = 0; i < 24; i++) {
         const selected = document.querySelector(`input[name="q${i}"]:checked`);
-        if (selected) {
-          const val = parseInt(selected.value);
-          if (i < 6) sa += val;
-          else if (i < 12) sm += val;
-          else if (i < 18) so += val;
-          else rm += val;
-        }
+        if (!selected) continue;
+        const val = parseInt(selected.value);
+        if (i < 6) sa += val;
+        else if (i < 12) sm += val;
+        else if (i < 18) so += val;
+        else rm += val;
       }
       const total = sa + sm + so + rm;
+
       document.getElementById('saScore').textContent = sa;
       document.getElementById('smScore').textContent = sm;
       document.getElementById('soScore').textContent = so;
       document.getElementById('rmScore').textContent = rm;
       document.getElementById('totalScore').textContent = total;
-      document.getElementById('saColor').innerHTML = getColorDot(sa);
-      document.getElementById('smColor').innerHTML = getColorDot(sm);
-      document.getElementById('soColor').innerHTML = getColorDot(so);
-      document.getElementById('rmColor').innerHTML = getColorDot(rm);
 
-      const firstName = document.getElementById('firstName').value.trim();
-      const lastName = document.getElementById('lastName').value.trim();
+      document.getElementById('saZone').innerHTML = getZone(sa);
+      document.getElementById('smZone').innerHTML = getZone(sm);
+      document.getElementById('soZone').innerHTML = getZone(so);
+      document.getElementById('rmZone').innerHTML = getZone(rm);
+
+      const first = document.getElementById('firstName').value.trim();
+      const last = document.getElementById('lastName').value.trim();
       const today = new Date().toLocaleDateString();
       document.getElementById('namedHeader').textContent = 
-        `BTGB Emotional Intelligence Scorecard for ${firstName} ${lastName} – Completed on ${today}`;
+        `BTGB Emotional Intelligence Scorecard for ${first} ${last} – Completed on ${today}`;
 
-      document.getElementById('results').style.display = 'block';
       document.getElementById('assessmentScreen').classList.add('hidden');
+      document.getElementById('results').classList.remove('hidden');
       window.scrollTo(0, document.body.scrollHeight);
     }
   </script>
