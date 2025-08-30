@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>BTGB Emotional Intelligence Scorecard</title>
   <style>
     body {
@@ -18,11 +19,20 @@
       border-left: 6px solid #2e7d32;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
-    .hidden {
-      display: none;
-    }
     h1, h2, h3 {
       color: #2e7d32;
+      margin-top: 0;
+    }
+    input[type="text"] {
+      padding: 10px;
+      font-size: 1em;
+      width: 100%;
+      max-width: 400px;
+      margin-bottom: 15px;
+      box-sizing: border-box;
+    }
+    .hidden {
+      display: none;
     }
     .question-block {
       display: none;
@@ -31,26 +41,27 @@
       display: block;
     }
     .radio-group {
-      margin: 15px 0;
+      margin-top: 10px;
     }
-    .radio-options {
-      display: flex;
-      justify-content: space-between;
-      max-width: 600px;
-      margin: auto;
-    }
+    .radio-options,
     .radio-labels {
       display: flex;
       justify-content: space-between;
-      max-width: 600px;
-      margin: 6px auto 0;
+      max-width: 100%;
+      margin: auto;
+      padding: 0 5%;
+    }
+    .radio-labels {
       font-size: 0.85em;
       color: #555;
+      margin-top: 4px;
     }
     .navigation {
-      margin-top: 20px;
+      margin-top: 30px;
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
     }
     button {
       padding: 10px 20px;
@@ -59,12 +70,7 @@
       border: none;
       border-radius: 4px;
       cursor: pointer;
-    }
-    input[type="text"] {
-      padding: 8px;
       font-size: 1em;
-      width: 45%;
-      margin: 10px 10px 20px 0;
     }
     .progress-bar {
       height: 20px;
@@ -72,20 +78,20 @@
       border-radius: 10px;
       margin-bottom: 20px;
       position: relative;
+      overflow: hidden;
     }
     .progress-bar-fill {
       height: 100%;
       width: 0%;
       background: #2e7d32;
       transition: width 0.3s ease;
-      border-radius: 10px;
     }
     .progress-label {
       position: absolute;
       width: 100%;
       text-align: center;
       top: 0;
-      font-size: 0.9em;
+      font-size: 0.85em;
       color: #1b5e20;
     }
     .results-table {
@@ -110,11 +116,24 @@
     .red { background-color: #F44336; }
     .legend {
       display: flex;
+      flex-wrap: wrap;
       justify-content: space-around;
       margin-top: 10px;
       padding: 10px;
       background: #f1f1f1;
       border: 1px solid #ccc;
+    }
+
+    @media (max-width: 600px) {
+      .radio-options label,
+      .radio-labels span {
+        font-size: 0.75em;
+        flex: 1;
+        text-align: center;
+      }
+      .radio-options input {
+        transform: scale(1.2);
+      }
     }
   </style>
 </head>
@@ -123,7 +142,7 @@
     <!-- Intro Screen -->
     <div id="introScreen">
       <h1>BTGB Emotional Intelligence Scorecard</h1>
-      <p>Please enter your name to begin:</p>
+      <p>Enter your name to begin:</p>
       <input type="text" id="firstName" placeholder="First Name" />
       <input type="text" id="lastName" placeholder="Last Name" />
       <br />
@@ -161,31 +180,11 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>Self-Awareness</td>
-            <td><span id="saScore"></span>/30</td>
-            <td id="saZone"></td>
-          </tr>
-          <tr>
-            <td>Self-Management</td>
-            <td><span id="smScore"></span>/30</td>
-            <td id="smZone"></td>
-          </tr>
-          <tr>
-            <td>Social Awareness</td>
-            <td><span id="soScore"></span>/30</td>
-            <td id="soZone"></td>
-          </tr>
-          <tr>
-            <td>Relationship Management</td>
-            <td><span id="rmScore"></span>/30</td>
-            <td id="rmZone"></td>
-          </tr>
-          <tr>
-            <th>Total Score</th>
-            <th><span id="totalScore"></span>/120</th>
-            <td></td>
-          </tr>
+          <tr><td>Self-Awareness</td><td><span id="saScore"></span>/30</td><td id="saZone"></td></tr>
+          <tr><td>Self-Management</td><td><span id="smScore"></span>/30</td><td id="smZone"></td></tr>
+          <tr><td>Social Awareness</td><td><span id="soScore"></span>/30</td><td id="soZone"></td></tr>
+          <tr><td>Relationship Management</td><td><span id="rmScore"></span>/30</td><td id="rmZone"></td></tr>
+          <tr><th>Total Score</th><th><span id="totalScore"></span>/120</th><td></td></tr>
         </tbody>
       </table>
       <br />
