@@ -18,14 +18,6 @@
       border-left: 6px solid #2e7d32;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
-    .logo-container {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    .logo-container img {
-      max-width: 200px;
-      height: auto;
-    }
     h1, h2, h3 {
       color: #2e7d32;
     }
@@ -119,19 +111,10 @@
       background: #f1f1f1;
       border: 1px solid #ccc;
     }
-    .section-header {
-      font-size: 1.2em;
-      color: #1b5e20;
-      margin-bottom: 10px;
-    }
   </style>
 </head>
 <body>
   <div id="container">
-    <div class="logo-container">
-      <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD...TRUNCATED_FOR_BREVITY..." alt="BTGB Logo">
-    </div>
-
     <div id="introScreen">
       <h1>BTGB Emotional Intelligence Scorecard</h1>
       <p>Please enter your name to begin.</p>
@@ -173,7 +156,7 @@
           <tr>
             <th>Pillar</th>
             <th>Score</th>
-            <th>Zone Status</th>
+            <th>Zone</th>
           </tr>
         </thead>
         <tbody>
@@ -204,9 +187,8 @@
           </tr>
         </tbody>
       </table>
-
-      <br><br>
-      <button onclick="window.print()">Print Scorecard</button>
+      <br />
+      <button onclick="window.print()">Print Results</button>
     </div>
   </div>
 
@@ -255,7 +237,7 @@
         block.className = 'question-block';
         if (i === 0) block.classList.add('active');
         const section = Math.floor(i / 6);
-        const sectionHeader = (i % 6 === 0) ? `<h3 class='section-header'>${sectionTitles[section]}</h3>` : "";
+        const sectionHeader = `<h3 class='section-header'>${sectionTitles[section]}</h3>`;
         block.innerHTML = sectionHeader + `
           <h2>Question ${i + 1} of ${questions.length}</h2>
           <p>${q}</p>
