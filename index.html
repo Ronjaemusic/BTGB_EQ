@@ -18,6 +18,14 @@
       border-left: 6px solid #2e7d32;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
+    .logo-container {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .logo-container img {
+      max-width: 200px;
+      height: auto;
+    }
     h1, h2, h3 {
       color: #2e7d32;
     }
@@ -73,25 +81,57 @@
       cursor: pointer;
       margin-right: 10px;
     }
-    #results {
-      display: none;
-      margin-top: 30px;
-    }
-    .section-header {
-      font-size: 1.2em;
-      color: #1b5e20;
-      margin-bottom: 10px;
-    }
     input[type="text"] {
       padding: 6px;
       font-size: 1em;
       width: 45%;
       margin-bottom: 10px;
     }
+    #results {
+      display: none;
+      margin-top: 30px;
+    }
+    .results-table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 20px;
+    }
+    .results-table th, .results-table td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: left;
+    }
+    .dot {
+      height: 14px;
+      width: 14px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 8px;
+    }
+    .green { background-color: #4CAF50; }
+    .yellow { background-color: #FFC107; }
+    .red { background-color: #F44336; }
+    .legend {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 10px;
+      padding: 10px;
+      background: #f1f1f1;
+      border: 1px solid #ccc;
+    }
+    .section-header {
+      font-size: 1.2em;
+      color: #1b5e20;
+      margin-bottom: 10px;
+    }
   </style>
 </head>
 <body>
   <div id="container">
+    <div class="logo-container">
+      <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD...TRUNCATED_FOR_BREVITY..." alt="BTGB Logo">
+    </div>
+
     <div id="introScreen">
       <h1>BTGB Emotional Intelligence Scorecard</h1>
       <p>Please enter your name to begin.</p>
@@ -122,12 +162,51 @@
 
     <div id="results">
       <h2 id="namedHeader"></h2>
-      <p><strong>Self-Awareness:</strong> <span id="saScore"></span> / 30 – <span id="saColor"></span></p>
-      <p><strong>Self-Management:</strong> <span id="smScore"></span> / 30 – <span id="smColor"></span></p>
-      <p><strong>Social Awareness:</strong> <span id="soScore"></span> / 30 – <span id="soColor"></span></p>
-      <p><strong>Relationship Mgmt:</strong> <span id="rmScore"></span> / 30 – <span id="rmColor"></span></p>
-      <p><strong>Total Score:</strong> <span id="totalScore"></span> / 120</p>
-      <button onclick="window.print()">Download as PDF</button>
+      <div class="legend">
+        <div><span class="dot red"></span> Needs Support (0–19)</div>
+        <div><span class="dot yellow"></span> Growth Zone (20–25)</div>
+        <div><span class="dot green"></span> Strength Zone (26–30)</div>
+      </div>
+
+      <table class="results-table">
+        <thead>
+          <tr>
+            <th>Pillar</th>
+            <th>Score</th>
+            <th>Zone Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Self-Awareness</td>
+            <td><span id="saScore"></span>/30</td>
+            <td id="saColor"></td>
+          </tr>
+          <tr>
+            <td>Self-Management</td>
+            <td><span id="smScore"></span>/30</td>
+            <td id="smColor"></td>
+          </tr>
+          <tr>
+            <td>Social Awareness</td>
+            <td><span id="soScore"></span>/30</td>
+            <td id="soColor"></td>
+          </tr>
+          <tr>
+            <td>Relationship Management</td>
+            <td><span id="rmScore"></span>/30</td>
+            <td id="rmColor"></td>
+          </tr>
+          <tr>
+            <th>Total Score</th>
+            <th><span id="totalScore"></span>/120</th>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <br><br>
+      <button onclick="window.print()">Print Scorecard</button>
     </div>
   </div>
 
@@ -221,9 +300,9 @@
     }
 
     function getColorDot(score) {
-      if (score >= 25) return "🟢 Strength Zone";
-      if (score >= 15) return "🟡 Growth Zone";
-      return "🔴 Needs Support";
+      if (score >= 26) return '<span class="dot green"></span> Strength Zone';
+      if (score >= 20) return '<span class="dot yellow"></span> Growth Zone';
+      return '<span class="dot red"></span> Needs Support';
     }
 
     function calculateScore() {
@@ -244,10 +323,10 @@
       document.getElementById('soScore').textContent = so;
       document.getElementById('rmScore').textContent = rm;
       document.getElementById('totalScore').textContent = total;
-      document.getElementById('saColor').textContent = getColorDot(sa);
-      document.getElementById('smColor').textContent = getColorDot(sm);
-      document.getElementById('soColor').textContent = getColorDot(so);
-      document.getElementById('rmColor').textContent = getColorDot(rm);
+      document.getElementById('saColor').innerHTML = getColorDot(sa);
+      document.getElementById('smColor').innerHTML = getColorDot(sm);
+      document.getElementById('soColor').innerHTML = getColorDot(so);
+      document.getElementById('rmColor').innerHTML = getColorDot(rm);
 
       const firstName = document.getElementById('firstName').value.trim();
       const lastName = document.getElementById('lastName').value.trim();
